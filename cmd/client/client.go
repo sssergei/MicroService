@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	pb "github.com/sssergei/userservice/proto/userservice/v1/myservice.proto"
+
 	"github.com/golang/protobuf/ptypes"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -16,7 +18,7 @@ func main() {
 		5*time.Second,
 	)
 
-	clientCert, err := credentials.NewClientTLSFromFile("../../cert/server.crt", "")
+	clientCert, err := credentials.NewClientTLSFromFile("../../cert/baseserver.crt", "")
 	if err != nil {
 		log.Fatalln("failed to create cert", err)
 	}
@@ -28,10 +30,10 @@ func main() {
 		log.Fatalln("Failed to dial server: ", err)
 	}
 
-	reminderClient := sservice.NewReminderServiceClient(reminderConn)
+	reminderClient := pb.NewReminderServiceClient(reminderConn)
 	fiveSeconds, _ := ptypes.TimestampProto(time.Now().Add(5 * time.Second))
 	resp, err := reminderClient.ScheduleReminder(ctx,
-		&sservice.ScheduleReminderRequest{
+		&pb.ScheduleReminderRequest{
 			When: fiveSeconds,
 		})
 	if err != nil {

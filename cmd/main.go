@@ -6,23 +6,22 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	pb "github.com/sssergei/userservice/proto/userservice/v1/myservice.proto"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/sssergei/microservice/internal/server"
-	"github.com/sssergei/microservice/proto/reminder/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
 func main() {
-	serverCert, err := credentials.NewServerTLSFromFile("../cert/server.crt", "../cert/server.key")
+	serverCert, err := credentials.NewServerTLSFromFile("../cert/baseserver.crt", "../cert/baseserver.key")
 	if err != nil {
 		log.Fatalln("failed to create cert", err)
 	}
 	grpcServer := grpc.NewServer(grpc.Creds(serverCert))
-	reminder.RegisterReminderServiceServer(grpcServer, new(server.MyServer))
+	pb.RegisterReminderServiceServer(grpcServer, new(pb.MyServer))
 
-	clientCert, err := credentials.NewClientTLSFromFile("../cert/server.crt", "")
+	clientCert, err := credentials.NewClientTLSFromFile("../cert/baseserver.crt", "")
 	if err != nil {
 		log.Fatalln("failed to create cert", err)
 	}
@@ -36,11 +35,11 @@ func main() {
 	}
 
 	router := runtime.NewServeMux()
-	if err = sservice.RegisterReminderServiceHandler(context.Background(), router, conn); err != nil {
+	if err = pb.RegisterReminderServiceHandler(context.Background(), router, conn); err != nil {
 		log.Fatalln("Failed to register gateway:", err)
 	}
 
-	http.ListenAndServeTLS(":8080", "../cert/server.crt", "../cert/server.key", httpGrpcRouter(grpcServer, router))
+	http.ListenAndServeTLS(":8080", "../cert/baseserver.crt", "../cert/baseserver.key", httpGrpcRouter(grpcServer, router))
 }
 
 func httpGrpcRouter(grpcServer *grpc.Server, httpHandler http.Handler) http.Handler {

@@ -5,7 +5,7 @@ package microservice.sservice.v1;
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
-option go_package = "sservice";
+option go_package = "github.com/sssergei/userservice/proto/userservice/v1/myservice.proto";
 
 service SserviceService {
     rpc ScheduleReminder(ScheduleReminderRequest) returns (ScheduleReminderResponse) {
