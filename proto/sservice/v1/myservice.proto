@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package microservice.sservice.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+option go_package = "sservice";
+
+service SserviceService {
+    rpc ScheduleReminder(ScheduleReminderRequest) returns (ScheduleReminderResponse) {
+        option (google.api.http) = { put: "/v1/reminder/sservice" body: "*" };
+    }
+}
+
+message ScheduleReminderRequest {
+    google.protobuf.Timestamp when = 1;
+}
+
+message ScheduleReminderResponse {
+    string id = 1;       
+}
